@@ -51,14 +51,14 @@ resources:
   source:
     branch: main
     private_key: ((ci.storage/Notes/deploy_key))
-    uri: https://github.com/oozie/storage.git
+    uri: https://github.com/oozie/blockchain-storage.git
     ignore_paths: [ terraform, ci ]
 
 - name: tf-repo
   type: git
   source:
     branch: main
-    uri: https://github.com/oozie/storage.git
+    uri: https://github.com/oozie/blockchain-storage.git
     paths: [ terraform ]
 
 jobs:
