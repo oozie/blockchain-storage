@@ -102,7 +102,7 @@ jobs:
           mkdir out
           cd out
           unzip ../storage-zipball/*.zip
-          aws s3 cp . s3://storage.trullla.com2 --recursive
+          aws s3 cp . s3://storage.trullla.com --recursive
 
 
 
