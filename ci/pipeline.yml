@@ -52,7 +52,7 @@ resources:
     branch: master
     private_key: ((ci.storage/Notes/deploy_key))
     uri: https://github.com/oozie/blockchain-storage.git
-    ignore_paths: [ terraform, ci ]
+    ignore_paths: [ terraform, ci, blockchain ]
 
 - name: tf-repo
   type: git
