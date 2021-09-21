@@ -22,6 +22,7 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 const fs = require('fs');
 const mnemonic = fs.readFileSync(".secret").toString().trim();
+const infura_url = fs.readFileSync(".infura").toString().trim();
 
 module.exports = {
   /**
@@ -39,7 +40,13 @@ module.exports = {
 	      host: "127.0.0.1",
 	      port: 7545,
 	      network_id: "*" // Match any network id
-	    }
+	},
+        rinkeby: {
+	      provider: function() {
+		return new HDWalletProvider(mnemonic, infura_url, 1);
+	      },
+	      network_id: "4"
+        }
   },
 
   // Set default mocha options here, use special reporters etc.

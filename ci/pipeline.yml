@@ -45,6 +45,16 @@ resources:
     regexp: storage/storage-(.*).zip
     region_name: ((ci.storage/Notes/aws_region))
 
+- name: storage-contracts
+  type: s3
+  source:
+    access_key_id: ((ci.storage/Notes/aws_access))
+    secret_access_key: ((ci.storage/Notes/aws_secret))
+    bucket: trullla-artifacts
+    initial_path: storagecontracts/storagecontracts-1234567890.tar.gz
+    regexp: storagecontracts/storagecontracts-(.*).tar.gz
+    region_name: ((ci.storage/Notes/aws_region))
+
 # TODO: access via ssh
 - name: code-repo
   type: git
@@ -53,6 +63,14 @@ resources:
     private_key: ((ci.storage/Notes/deploy_key))
     uri: https://github.com/oozie/blockchain-storage.git
     ignore_paths: [ terraform, ci, blockchain ]
+
+- name: blockchain-repo
+  type: git
+  source:
+    branch: master
+    private_key: ((ci.storage/Notes/deploy_key))
+    uri: https://github.com/oozie/blockchain-storage.git
+    paths: [ blockchain ]
 
 - name: tf-repo
   type: git
@@ -103,6 +121,46 @@ jobs:
           cd out
           unzip ../storage-zipball/*.zip
           aws s3 cp . s3://storage.trullla.com --recursive
+
+- name: contract-deploy
+  plan:
+  - get: ci-repo
+  - get: blockchain-repo
+  - task: s3-deploy
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: oozie/truffle
+      inputs:
+        - name: blockchain-repo
+      outputs:
+        - name: storage-contracts
+      params:
+        CODEDIR: blockchain-repo/blockchain
+        PHRASE: ((ci.storage/Notes/phrase))
+        INFURA: ((ci.storage/Notes/infura))
+        NETWORK: rinkeby
+        <<: *aws_params
+      run:
+        path: /bin/sh
+        args:
+        - -c
+        - |
+          home=$PWD
+          cd $CODEDIR
+          npm install
+          echo "$PHRASE" > .secret
+          echo "$INFURA" > .infura
+          truffle compile
+          truffle migrate --network "$NETWORK"
+
+          cd build
+          tar czf $home/storage-contracts/storagecontracts-$(date +%s).tar.gz  $(find contracts)
+  - put: storage-contracts
+    params:
+      file: storage-contracts/*.tar.gz
 
 
 
