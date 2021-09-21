@@ -65,7 +65,6 @@ function App() {
     try {
       await deactivate()
       setAuthorized(false);
-      console.log("disc")
     } catch (ex) {
       console.log(ex)
     }
@@ -80,55 +79,55 @@ function App() {
     })
   }, []);
 
-	useEffect(() => {
+  useEffect(() => {
     if (library === undefined) {
-			return
+      return
     }
     axios.get("/contracts/Storage.json")
       .then((response) => {
         const abi = response.data.abi;
-				const network_id = Object.keys(response.data.networks)[0];
+        const network_id = Object.keys(response.data.networks)[0];
         const address = response.data.networks[network_id].address;
-				const storageContract = new library.eth.Contract(abi, address);
-			  setContract(storageContract);
+        const storageContract = new library.eth.Contract(abi, address);
+        setContract(storageContract);
       })
       .catch((error) => {
-				console.log(error)
-		});
+        console.log(error)
+    });
   }, [library])
 
 
-	const retreiveFromBlockchain = () => {
-		contract.methods.retrieve().call()
-			.then((result) => {
-				setValue(result)
-			})
+  const retreiveFromBlockchain = () => {
+    contract.methods.retrieve().call()
+      .then((result) => {
+        setValue(result)
+      })
   }
 
-	useEffect(() => {
+  useEffect(() => {
     if (contract === null) {
-			return
+      return
     }
     retreiveFromBlockchain();
   }, [contract])
 
-	const publish = () => {
-		contract.methods.store(newValue).send({from: account})
+  const publish = () => {
+    contract.methods.store(newValue).send({from: account})
       .then((result) => {
          console.log(result);
-				 retreiveFromBlockchain();
+         retreiveFromBlockchain();
        })
       .catch((error) => {
          console.log(error);
       })
   }
 
-	const handleInput = (event) => {
+  const handleInput = (event) => {
     const v = event.target.value;
-		if (v.includes(".")) return;
-		if (!isNaN(event.target.value)) {
-			setNewValue(event.target.value);
-		}
+    if (v.includes(".")) return;
+    if (!isNaN(event.target.value)) {
+      setNewValue(event.target.value);
+    }
   }
 
   return (
@@ -143,14 +142,14 @@ function App() {
             <Grid container>
               <Grid container direction="column" alignItems="center" >
                 <Grid item >
-									<Typography variant="h1">
+                  <Typography variant="h1">
                   {value}
-									</Typography>
+                  </Typography>
                 </Grid>
                 <Grid item >
-									<Typography variant="h1">
+                  <Typography variant="h1">
                     <OutlinedInput onChange={handleInput} value={newValue} />
-									</Typography>
+                  </Typography>
                 </Grid>
                 <Grid item >
                   <Button onClick={publish} style={{width: "100%"}} variant="contained" disabled={!active}>publish "{newValue}" to blockchain</Button>
