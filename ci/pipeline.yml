@@ -101,6 +101,9 @@ jobs:
   - get: storage-zipball
     passed: [ build ]
     trigger: true
+  - get: storage-contracts
+    passed: [ contract-deploy ]
+    trigger: true
   - task: s3-deploy
     config:
       platform: linux
@@ -109,6 +112,7 @@ jobs:
         source:
           repository: xueshanf/awscli
       inputs:
+        - name: storage-contracts
         - name: storage-zipball
       params:
         <<: *aws_params
@@ -120,13 +124,14 @@ jobs:
           mkdir out
           cd out
           unzip ../storage-zipball/*.zip
+          tar xzf ../storage-contracts/*.tar.gz
           aws s3 cp . s3://storage.trullla.com --recursive
 
 - name: contract-deploy
   plan:
   - get: ci-repo
   - get: blockchain-repo
-  - task: s3-deploy
+  - task: complile-deploy-rinkeby
     config:
       platform: linux
       image_resource:

@@ -87,7 +87,8 @@ function App() {
     axios.get("/contracts/Storage.json")
       .then((response) => {
         const abi = response.data.abi;
-        const address = response.data.networks["5777"].address;
+				const network_id = Object.keys(response.data.networks)[0];
+        const address = response.data.networks[network_id].address;
 				const storageContract = new library.eth.Contract(abi, address);
 			  setContract(storageContract);
       })
