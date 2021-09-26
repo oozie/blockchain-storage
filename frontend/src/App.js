@@ -26,6 +26,16 @@ function getLibrary(provider: any): Web3Provider {
 
 
 function ButtonAppBar(props) {
+
+  const [ owner, setOwner] = useState("unknown");
+
+  function handleOpen() {
+    props.contract.methods.owner().call()
+      .then((result) => {
+        alert(result);
+      })
+  }
+
   return (
       <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
@@ -33,6 +43,11 @@ function ButtonAppBar(props) {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 Blockchain Storage
               </Typography>
+
+              <Button color="inherit" variant="outlined" disabled={!props.active} onClick={ handleOpen }>
+                Who is the owner?
+              </Button>
+
               <Button color="inherit" onClick={ props.active ? () => {} : props.connect }>
                 { props.active ? props.account : "Connect wallet" }
             </Button>
@@ -130,7 +145,7 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <div className="App">
         <header className="App-header">
-          <ButtonAppBar active={active} connect={connect} disconnect={disconnect} account={account} />
+          <ButtonAppBar active={active} connect={connect} disconnect={disconnect} account={account} contract={contract} />
         </header>
         <Box sx={{ m: 4 }} />
         <Paper style={{width: "60vw", margin: "auto", height: "60vh", padding: 32}} elevation={6}>
