@@ -47,7 +47,6 @@ function ButtonAppBar(props) {
 function App() {
   const { active, account, library, connector, activate, deactivate } = useWeb3React()
 
-  const [ authorized, setAuthorized ] = useState(false);
   const [ contract, setContract] = useState(null);
   const [ value, setValue] = useState();
   const [ newValue, setNewValue] = useState(0);
@@ -55,7 +54,6 @@ function App() {
   async function connect() {
     try {
       await activate(injected)
-      console.log("conn")
     } catch (ex) {
       console.log(ex)
     }
@@ -64,7 +62,6 @@ function App() {
   async function disconnect() {
     try {
       await deactivate()
-      setAuthorized(false);
     } catch (ex) {
       console.log(ex)
     }
@@ -72,7 +69,6 @@ function App() {
 
   useEffect(() => {
     injected.isAuthorized().then((isAuth) => {
-      setAuthorized(isAuth)
       if (isAuth) {
         activate(injected)
       }
